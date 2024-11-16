@@ -31,6 +31,6 @@ You can also install Python 3.x x64 from [here](https://www.python.org/downloads
 3. Navigate to the src folder and execute:
     ```bash
     cd src
-    python main.py -v 1 --pop_size 500 --tourn_size 50 --mut_rate 0.02 --n_gen 20 --cities_fn '../data/cities.csv'
+    python main.py -v 1 --pop_size 500 --tourn_size 50 --mut_rate 0.02 --n_gen 20 --cities_fn './cities.csv'
     ```
 

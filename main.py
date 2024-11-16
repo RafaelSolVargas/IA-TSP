@@ -1,42 +1,36 @@
-import utils
-import random
-import argparse
-import tsp_ga as ga
+from Domain.ExecutionParameters import ExecutionParameters
+from Domain.TSPHelper import GeneticAlgorithmRunner
+from View.Plotter import Plotter
 from datetime import datetime
+import Utils.utils as utils
+import random
 
 
-def run(args):
-    genes = utils.get_genes_from(args.cities_fn)
+def run(parameters: ExecutionParameters):
+    genes = utils.readCitiesFile(parameters.FilePath)
 
-    if args.verbose:
-        print("-- Running TSP-GA with {} cities --".format(len(genes)))
+    print(f"-- Executando algoritmo genético para {len(genes)} cidades --")
 
-    history = ga.run_ga(genes, args.pop_size, args.n_gen,
-                        args.tourn_size, args.mut_rate, args.verbose)
+    runner = GeneticAlgorithmRunner(parameters, genes)
 
-    if args.verbose:
-        print("-- Drawing Route --")
+    history = runner.run()
 
-    utils.plot(history['cost'], history['route'])
-
-    if args.verbose:
-        print("-- Done --")
+    Plotter.plotGeneticResult(history['cost'], history['route'])
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parameters = ExecutionParameters(
+        popSize=500,         # Tamanho da população
+        tournSize=50,        # Tamanho do torneio
+        mutRate=0.02,        # Taxa de mutação
+        nGen=20,             # Número de gerações
+        filePath='./InputData/cities.csv'  # Caminho para o arquivo de cidades
+    )
 
-    parser.add_argument('-v', '--verbose', type=int, default=1)
-    parser.add_argument('--pop_size', type=int, default=500, help='Population size')
-    parser.add_argument('--tourn_size', type=int, default=50, help='Tournament size')
-    parser.add_argument('--mut_rate', type=float, default=0.02, help='Mutation rate')
-    parser.add_argument('--n_gen', type=int, default=20, help='Number of equal generations before stopping')
-    parser.add_argument('--cities_fn', type=str, default="data/cities.csv", help='Data containing the geographical coordinates of cities')
+    # Verificação de consistência entre os parâmetros
+    if parameters.TournSize > parameters.PopSize:
+        raise ValueError("Tournament size cannot be bigger than population size.")
 
     random.seed(int(datetime.now().timestamp()))
-    args = parser.parse_args()
 
-    if args.tourn_size > args.pop_size:
-        raise argparse.ArgumentTypeError('Tournament size cannot be bigger than population size.')
-
-    run(args)
+    run(parameters)
