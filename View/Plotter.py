@@ -41,17 +41,21 @@ class Plotter:
         plt.title("Rota Otimizada Encontrada", fontsize=12)
 
         for i in range(0, len(individual.genes)):
+            city_name = individual.genes[i].name
             x, y = m(individual.genes[i].lng, individual.genes[i].lat)
 
             # Ponto como estrela verde
             plt.plot(x, y, marker='*', color='green', markersize=6, label='Cidade' if i == 0 else "")
+
+            # Adiciona o nome da cidade
+            plt.text(x, y, f" {city_name}", fontsize=8, color='blue', alpha=0.9)
 
             if i == len(individual.genes) - 1:
                 x2, y2 = m(individual.genes[0].lng, individual.genes[0].lat)
             else:
                 x2, y2 = m(individual.genes[i+1].lng, individual.genes[i+1].lat)
 
-            # Linhas conectando as cidades em cinza claro
+            # Linhas conectando as cidades
             plt.plot([x, x2], [y, y2], '-', color='green', alpha=0.7, linewidth=1.5)
 
         # Legenda opcional

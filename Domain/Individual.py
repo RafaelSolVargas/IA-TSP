@@ -17,11 +17,11 @@ class Individual:  # Route: possible solution to TSP
     @property
     def fitness(self):
         if self.__fitness == 0:
-            self.__fitness = 1 / self.travel_cost  # Normalize travel cost
+            self.__fitness = 1 / self.travelCost  # Normalize travel cost
         return self.__fitness
 
     @property
-    def travel_cost(self):  # Get total travelling cost
+    def travelCost(self):  # Get total travelling cost
         if self.__travel_cost == 0:
             for i in range(len(self.genes)):
                 origin = self.genes[i]
@@ -30,7 +30,7 @@ class Individual:  # Route: possible solution to TSP
                 else:
                     dest = self.genes[i+1]
 
-                self.__travel_cost += origin.get_distance_to(dest)
+                self.__travel_cost += origin.getDistanceTo(dest)
 
         return self.__travel_cost
 

@@ -9,23 +9,29 @@ from time import time
 class GeneticAlgorithmRunner:
     def __init__(self, parameters: ExecutionParameters, genes):
         self.genes = genes
-        self.pop_size = parameters.PopSize
-        self.n_gen = parameters.NGen
-        self.tourn_size = parameters.TournSize
-        self.mut_rate = parameters.MutRate
+        self.popSize = parameters.PopSize
+        self.nGen = parameters.NGen
+        self.tournSize = parameters.TournSize
+        self.mutRate = parameters.MutRate
+        self.MaxGen = parameters.MaxGen
         self.verbose = 1
 
     def run(self):
-        population = Population.genIndividuals(self.pop_size, self.genes)
-        history = {'cost': [population.getFittest().travel_cost]}
-        counter, generations, min_cost = 0, 0, maxsize
+        population = Population.genIndividuals(self.popSize, self.genes)
+        history = {'cost': [population.getFittest().travelCost]}
+        counter, generations, maxCounter, min_cost = 0, 0, 0, maxsize
 
         print("Caxiero Viajante => Iniciando execução...")
 
         start_time = time()
-        while counter < self.n_gen:
-            population = self.evolve(population, self.tourn_size, self.mut_rate)
-            cost = population.getFittest().travel_cost
+        while counter < self.nGen:
+            maxCounter += 1
+
+            if (maxCounter > self.MaxGen):
+                break
+
+            population = self.evolve(population, self.tournSize, self.mutRate)
+            cost = population.getFittest().travelCost
 
             if cost < min_cost:
                 counter, min_cost = 0, cost
@@ -46,7 +52,7 @@ class GeneticAlgorithmRunner:
         return history
 
 
-    def evolve(self, pop, tourn_size, mut_rate):
+    def evolve(self, pop, tournSize, mutRate):
         new_generation = Population([])
         pop_size = len(pop.individuals)
         elitism_num = pop_size // 2
@@ -59,24 +65,24 @@ class GeneticAlgorithmRunner:
 
         # Crossover
         for _ in range(elitism_num, pop_size):
-            parent_1 = self.selection(new_generation, tourn_size)
-            parent_2 = self.selection(new_generation, tourn_size)
+            parent_1 = self.selection(new_generation, tournSize)
+            parent_2 = self.selection(new_generation, tournSize)
             child = self.crossover(parent_1, parent_2)
             new_generation.add(child)
 
         # Mutation
         for i in range(elitism_num, pop_size):
-            self.mutate(new_generation.individuals[i], mut_rate)
+            self.mutate(new_generation.individuals[i], mutRate)
 
         return new_generation
 
 
-    def crossover(self, parent_1, parent_2):
+    def crossover(self, parentOne, parentTwo):
         def FillWithFirstParentGenes(child, parent, genes_n):
             start_at = randint(0, len(parent.genes)-genes_n-1)
             finish_at = start_at + genes_n
             for i in range(start_at, finish_at):
-                child.genes[i] = parent_1.genes[i]
+                child.genes[i] = parentOne.genes[i]
 
         def FillWithSecondParentGenes(child, parent):
             j = 0
@@ -87,10 +93,10 @@ class GeneticAlgorithmRunner:
                     child.genes[i] = parent.genes[j]
                     j += 1
 
-        genes_n = len(parent_1.genes)
+        genes_n = len(parentOne.genes)
         child = Individual([None for _ in range(genes_n)])
-        FillWithFirstParentGenes(child, parent_1, genes_n // 2)
-        FillWithSecondParentGenes(child, parent_2)
+        FillWithFirstParentGenes(child, parentOne, genes_n // 2)
+        FillWithSecondParentGenes(child, parentTwo)
 
         return child
 

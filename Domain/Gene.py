@@ -8,7 +8,7 @@ class Gene:
         self.lat = lat
         self.lng = lng
 
-    def get_distance_to(self, dest):
+    def getDistanceTo(self, dest):
         origin = (self.lat, self.lng)
         dest = (dest.lat, dest.lng)
 
